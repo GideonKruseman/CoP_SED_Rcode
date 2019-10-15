@@ -19,7 +19,7 @@
 # https://creativecommons.org/licenses/by/4.0/legalcode
 #
 # Citation:
-# Tyszler, M. 2019 Comparison search: use case IFPRI gender data sets. enderMeetsBigData_001_comparison search.R
+# Tyszler, M. 2019 Comparison search: use case IFPRI gender data sets. GenderMeetsBigData_001_comparison search.R
 #=============================================================================
 #<%/REGION File header%>
 library(dataverse)
@@ -27,6 +27,7 @@ library(WriteXLS)
 Sys.setenv("DATAVERSE_SERVER" = "dataverse.harvard.edu")
 
 ## Supporting functions
+# this function returns a list of keywords based on a dataset (from dataverse) id
 keywords <-function(id) {
   # load dataset metadata
   ds<-dataset_metadata(id)
@@ -44,7 +45,7 @@ keywords <-function(id) {
 
 }
 
-
+# create a data frae with handles provided by IFPRI researchers
 ifpri<-data.frame(c("hdl:1902.1/17954",
                     "hdl:1902.1/11189",
                     "hdl:1902.1/11180",
@@ -113,7 +114,7 @@ colnames(ifpri)<-"id"
 
 ## Search:
 
-# retrieve
+# retrieve datasets with the word "gender" in a metadata field and collect keywords
 df1<-dataverse_search("gender", type = "dataset", subtree = "IFPRI", per_page = 100)
 a1<-df1[c("name","global_id")]
 a1$keywords<-""
@@ -125,7 +126,7 @@ for (i in 1:nrow(a1)) {
 #export
 WriteXLS(a1, "temp1.xlsx", Encoding = "latin1")
 
-# retrieve
+# retrieve datasets with the word "women" in a metadata field and collect keywords
 df2<-dataverse_search("women", type = "dataset", subtree = "IFPRI", per_page = 100)
 a2<-df2[c("name","global_id")]
 a2$keywords<-""
@@ -138,7 +139,7 @@ for (i in 1:nrow(a2)) {
 #export
 WriteXLS(a2, "temp2.xlsx", Encoding = "latin1")
 
-# retrieve
+# retrieve datasets with the word "female" in a metadata field and collect keywords
 df3<-dataverse_search("female", type = "dataset", subtree = "IFPRI", per_page = 100)
 a3<-df3[c("name","global_id")]
 a3$keywords<-""
@@ -152,8 +153,14 @@ WriteXLS(a3, "temp3.xlsx", Encoding = "latin1")
 
 
 ###
+# retrieve keyword of the pre-listed datasets
 ifpri$keywords<-""
 for (i in 1:nrow(ifpri)) {
   print(ifpri$id[i])
+  ifpri$keywords[i]<-keywords(ifpri$id[i])
+}
+
+##
+# using temp1.xlsx-temp4.xlsx it is possible to compare the findability of the datasets
 
 #============================   End Of File   ================================
